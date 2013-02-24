@@ -26,7 +26,7 @@ digit_height = 15
 expand_pixels = 4  # margin of error
 
 # Thresholds
-max_iterations = 10
+max_iterations = 999
 target_value = 89
 
 # Logging
@@ -65,7 +65,7 @@ def get_roll_value():
         roll_value = tens_digits[0] * 10 + ones_digits[0]
         return roll_value
     else:
-        logging.error('Mutiple matches. tens: %d, ones: %d', tens_digits, ones_digits)
+        logging.error('Mutiple matches. tens: %s, ones: %s', tens_digits, ones_digits)
         if len(tens_digits) != 1:
             tens_digit_region.highlight(3)
         if len(ones_digits) != 1:
@@ -85,12 +85,12 @@ for i in xrange(0, max_iterations):
     if current_value > current_top:
         click(store_button_pattern)
         current_top = current_value
-        logging.info("%d: Stored new top value: %d", i, current_top)
+        logging.info("%d: Stored new top value:  %d", i, current_top)
 
         if current_top >= target_value:
             break;
     else:
-        logging.info("%d: Rolled a max value of: %d", i, current_value)
+        logging.info("%d: Rolled total value of: %d", i, current_value)
         
 
 click(recall_button_pattern)
