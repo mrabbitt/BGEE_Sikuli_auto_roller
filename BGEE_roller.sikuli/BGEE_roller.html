@@ -1,0 +1,163 @@
+
+<html>
+   <head>
+      <style type="text/css">
+         .sikuli-code {
+            font-size: 20px;
+            font-family: "Osaka-mono", Monospace;
+            line-height: 1.5em;
+            display:table-cell;
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            width: 99%;   /* remove horizontal scroll-bar when viewing in IE7 */
+         }
+         .sikuli-code img {
+            vertical-align: middle;
+            margin: 2px;
+            border: 1px solid #ccc;
+            padding: 2px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 1px 1px 1px gray;
+            -webkit-box-shadow: 1px 1px 2px gray;
+         }
+         .kw {
+            color: blue;
+         }
+         .skw {
+            color: rgb(63, 127, 127);
+         }
+
+         .str {
+            color: rgb(128, 0, 0);
+         }
+
+         .dig {
+            color: rgb(128, 64, 0);
+         }
+
+         .cmt {
+            color: rgb(200, 0, 200);
+         }
+
+         h2 {
+            display: inline;
+            font-weight: normal;
+         }  
+         
+         .info {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: none;
+         }
+
+         a {
+            color: #9D2900;
+         }
+
+         body {
+            font-family: "Trebuchet MS", Arial, Sans-Serif;
+         }
+
+      </style>
+   </head>
+<body>
+<div class="info">
+<h2>BGEE_roller.sikuli</h2> <a href="BGEE_roller.zip">(Download this script)</a>
+</div>
+<pre class="sikuli-code">
+total_roll_pattern = <img src="Total_Roll.png" />
+reroll_button_pattern = <img src="REROLL.png" />
+store_button_pattern = <img src="STORE.png" />
+recall_button_pattern = <img src="REQALL.png" />
+
+number_patterns = [
+    (<span class="dig">0</span>, <img src="number0.png" />),
+    (<span class="dig">1</span>, <img src="number1.png" />),
+    (<span class="dig">2</span>, <img src="number2.png" />),
+    (<span class="dig">3</span>, Pattern(<img src="number3.png" />).similar(<span class="dig">0.87</span>)),
+    (<span class="dig">4</span>, <img src="number4.png" />),
+    (<span class="dig">5</span>, Pattern(<img src="number5.png" />).similar(<span class="dig">0.85</span>)),
+    (<span class="dig">6</span>, <img src="number6.png" />),
+    (<span class="dig">7</span>, <img src="number7.png" />),
+    (<span class="dig">8</span>, <img src="number8.png" />),
+    (<span class="dig">9</span>, <img src="number9.png" />),
+]
+
+<span class="cmt"># Numbers are roughly 12 x 15
+</span>digit_offset_width = <span class="dig">14</span>
+digit_width = <span class="dig">14</span>
+digit_height = <span class="dig">15</span>
+expand_pixels = <span class="dig">4</span>  <span class="cmt"># margin of error</span>
+
+<span class="cmt"># Thresholds
+</span>max_iterations = <span class="dig">10</span>
+target_value = <span class="dig">89</span>
+
+
+<span class="kw">def</span> get_digits_in_region(region):
+    found_numbers = []
+    <span class="kw">for</span> number_pattern <span class="kw">in</span> number_patterns:
+        <span class="kw">if</span> region.exists(number_pattern[<span class="dig">1</span>], <span class="dig">0.001</span>):
+            found_numbers.append(number_pattern[<span class="dig">0</span>])
+    <span class="kw">return</span> found_numbers
+
+<span class="cmt"># Find total roll region
+</span><span class="kw">def</span> get_roll_value():
+    <span class="skw">wait</span>(total_roll_pattern)
+    total_roll = <span class="skw">find</span>(total_roll_pattern)
+
+    tens_digit_region = Region(
+        int(total_roll.getTopRight().getX() - expand_pixels),
+        int(total_roll.getTopRight().getY() - expand_pixels) - <span class="dig">1</span>,
+        digit_width + (<span class="dig">2</span> * expand_pixels),
+        digit_height+ (<span class="dig">2</span> * expand_pixels)
+    )
+    ones_digit_region = Region(
+        int(total_roll.getTopRight().getX() - expand_pixels) + digit_offset_width,
+        int(total_roll.getTopRight().getY() - expand_pixels) - <span class="dig">1</span>,
+        digit_width + (<span class="dig">2</span> * expand_pixels),
+        digit_height + (<span class="dig">2</span> * expand_pixels)
+    )
+
+    tens_digits = get_digits_in_region(tens_digit_region)
+    ones_digits = get_digits_in_region(ones_digit_region)
+    <span class="kw">if</span> len(tens_digits) == len(ones_digits) == <span class="dig">1</span>:
+        roll_value = tens_digits[<span class="dig">0</span>] * <span class="dig">10</span> + ones_digits[<span class="dig">0</span>]
+        <span class="kw">return</span> roll_value
+    <span class="kw">else</span>:
+        <span class="kw">print</span> <span class="str">'ERROR: Mutiple matches. tens:'</span>, tens_digits, <span class="str">', ones: '</span>, ones_digits
+        <span class="kw">if</span> len(tens_digits) != <span class="dig">1</span>:
+            tens_digit_region.highlight(<span class="dig">3</span>)
+        <span class="kw">if</span> len(ones_digits) != <span class="dig">1</span>:
+            ones_digit_region.highlight(<span class="dig">3</span>)
+        <span class="kw">return</span> <span class="dig">0</span>
+
+<span class="cmt"># Main runtime loop.
+</span>current_top = <span class="dig">0</span>
+<span class="skw">click</span>(store_button_pattern)
+
+<span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">0</span>, max_iterations):
+    current_value = get_roll_value()
+
+    <span class="kw">if</span> current_value &gt; current_top:
+        <span class="skw">click</span>(store_button_pattern)
+        current_top = current_value
+        <span class="kw">print</span> i, <span class="str">": Stored new top value: "</span>, current_top
+
+        <span class="kw">if</span> current_top &gt;= target_value:
+            <span class="kw">break</span>;
+    <span class="kw">else</span>:
+        <span class="kw">print</span> i, <span class="str">": Rolled a max value of: "</span>, current_value
+
+    <span class="skw">click</span>(reroll_button_pattern)
+
+<span class="skw">click</span>(recall_button_pattern)
+<span class="kw">print</span> <span class="str">"Done, recalled top roll of "</span>, current_top
+</pre>
+</body>
+</html>
