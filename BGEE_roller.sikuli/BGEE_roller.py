@@ -1,3 +1,6 @@
+import logging
+reload(logging)  # Workaround from: https://answers.launchpad.net/sikuli/+question/180346#comment-17
+
 total_roll_pattern = "Total_Roll.png"
 reroll_button_pattern = "REROLL.png"
 store_button_pattern = "STORE.png"
@@ -26,6 +29,10 @@ expand_pixels = 4  # margin of error
 max_iterations = 10
 target_value = 89
 
+# Logging
+logging.basicConfig(format='%(asctime)s [%(process)d] %(levelname)-8s %(message)s',
+    level=logging.INFO, 
+    filename='/Users/mike/Documents/coding/BGEE_Sikuli_auto_roller/BGEE_roller.log')
 
 def get_digits_in_region(region):
     found_numbers = []
@@ -58,31 +65,33 @@ def get_roll_value():
         roll_value = tens_digits[0] * 10 + ones_digits[0]
         return roll_value
     else:
-        print 'ERROR: Mutiple matches. tens:', tens_digits, ', ones: ', ones_digits
+        logging.error('Mutiple matches. tens: %d, ones: %d', tens_digits, ones_digits)
         if len(tens_digits) != 1:
             tens_digit_region.highlight(3)
         if len(ones_digits) != 1:
             ones_digit_region.highlight(3)
         return 0
 
+
 # Main runtime loop.
-current_top = 0
+logging.info("Starting with max_iterations=%d, target_value=%d", max_iterations, target_value)
 click(store_button_pattern)
+current_top = get_roll_value()
 
 for i in xrange(0, max_iterations):
+    click(reroll_button_pattern)
     current_value = get_roll_value()
 
     if current_value > current_top:
         click(store_button_pattern)
         current_top = current_value
-        print i, ": Stored new top value: ", current_top
+        logging.info("%d: Stored new top value: %d", i, current_top)
 
         if current_top >= target_value:
             break;
     else:
-        print i, ": Rolled a max value of: ", current_value 
+        logging.info("%d: Rolled a max value of: %d", i, current_value)
         
-    click(reroll_button_pattern)
 
 click(recall_button_pattern)
-print "Done, recalled top roll of ", current_top
+logging.info("Done, recalled top roll of %s!", current_top)

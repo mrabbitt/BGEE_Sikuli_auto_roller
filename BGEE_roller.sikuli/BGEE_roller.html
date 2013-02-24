@@ -70,6 +70,9 @@
 <h2>BGEE_roller.sikuli</h2> <a href="BGEE_roller.zip">(Download this script)</a>
 </div>
 <pre class="sikuli-code">
+<span class="kw">import</span> logging
+reload(logging)  <span class="cmt"># Workaround from: https://answers.launchpad.net/sikuli/+question/180346#comment-17</span>
+
 total_roll_pattern = <img src="Total_Roll.png" />
 reroll_button_pattern = <img src="REROLL.png" />
 store_button_pattern = <img src="STORE.png" />
@@ -98,6 +101,10 @@ expand_pixels = <span class="dig">4</span>  <span class="cmt"># margin of error<
 </span>max_iterations = <span class="dig">10</span>
 target_value = <span class="dig">89</span>
 
+<span class="cmt"># Logging
+</span>logging.basicConfig(format=<span class="str">'%(asctime)s [%(process)d] %(levelname)-8s %(message)s'</span>,
+    level=logging.INFO,
+    filename=<span class="str">'/Users/mike/Documents/coding/BGEE_Sikuli_auto_roller/BGEE_roller.log'</span>)
 
 <span class="kw">def</span> get_digits_in_region(region):
     found_numbers = []
@@ -130,34 +137,36 @@ target_value = <span class="dig">89</span>
         roll_value = tens_digits[<span class="dig">0</span>] * <span class="dig">10</span> + ones_digits[<span class="dig">0</span>]
         <span class="kw">return</span> roll_value
     <span class="kw">else</span>:
-        <span class="kw">print</span> <span class="str">'ERROR: Mutiple matches. tens:'</span>, tens_digits, <span class="str">', ones: '</span>, ones_digits
+        logging.error(<span class="str">'Mutiple matches. tens: %d, ones: %d'</span>, tens_digits, ones_digits)
         <span class="kw">if</span> len(tens_digits) != <span class="dig">1</span>:
             tens_digit_region.highlight(<span class="dig">3</span>)
         <span class="kw">if</span> len(ones_digits) != <span class="dig">1</span>:
             ones_digit_region.highlight(<span class="dig">3</span>)
         <span class="kw">return</span> <span class="dig">0</span>
 
+
 <span class="cmt"># Main runtime loop.
-</span>current_top = <span class="dig">0</span>
+</span>logging.info(<span class="str">"Starting with max_iterations=%d, target_value=%d"</span>, max_iterations, target_value)
 <span class="skw">click</span>(store_button_pattern)
+current_top = get_roll_value()
 
 <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">0</span>, max_iterations):
+    <span class="skw">click</span>(reroll_button_pattern)
     current_value = get_roll_value()
 
     <span class="kw">if</span> current_value &gt; current_top:
         <span class="skw">click</span>(store_button_pattern)
         current_top = current_value
-        <span class="kw">print</span> i, <span class="str">": Stored new top value: "</span>, current_top
+        logging.info(<span class="str">"%d: Stored new top value: %d"</span>, i, current_top)
 
         <span class="kw">if</span> current_top &gt;= target_value:
             <span class="kw">break</span>;
     <span class="kw">else</span>:
-        <span class="kw">print</span> i, <span class="str">": Rolled a max value of: "</span>, current_value
+        logging.info(<span class="str">"%d: Rolled a max value of: %d"</span>, i, current_value)
 
-    <span class="skw">click</span>(reroll_button_pattern)
 
 <span class="skw">click</span>(recall_button_pattern)
-<span class="kw">print</span> <span class="str">"Done, recalled top roll of "</span>, current_top
+logging.info(<span class="str">"Done, recalled top roll of %s!"</span>, current_top)
 </pre>
 </body>
 </html>
