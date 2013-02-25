@@ -70,7 +70,16 @@
 <h2>BGEE_roller.sikuli</h2> <a href="BGEE_roller.zip">(Download this script)</a>
 </div>
 <pre class="sikuli-code">
+<span class="str">'''
+BGEE Sikuli Auto Roller
+
+Copyright (c) 2013 by Michael Rabbitt (github.com/mrabbitt)
+TODO Add license.
+'''</span>
 <span class="kw">import</span> logging
+<span class="kw">import</span> sys
+<span class="kw">from</span> os <span class="kw">import</span> path
+
 reload(logging)  <span class="cmt"># Workaround from: https://answers.launchpad.net/sikuli/+question/180346#comment-17</span>
 
 total_roll_pattern = <img src="Total_Roll.png" />
@@ -101,10 +110,14 @@ expand_pixels = <span class="dig">4</span>  <span class="cmt"># margin of error<
 </span>max_iterations = <span class="dig">999</span>
 target_value = <span class="dig">89</span>
 
-<span class="cmt"># Logging
+<span class="cmt"># Logging configuration
 </span>logging.basicConfig(format=<span class="str">'%(asctime)s [%(process)d] %(levelname)-8s %(message)s'</span>,
-    level=logging.INFO,
-    filename=<span class="str">'/Users/mike/Documents/coding/BGEE_Sikuli_auto_roller/BGEE_roller.log'</span>)
+    level=logging.INFO, stream=sys.stdout)
+<span class="kw">if</span> getBundlePath() <span class="kw">is</span> <span class="kw">not</span> None <span class="kw">and</span> getBundlePath().endswith(<span class="str">'.sikuli'</span>)
+    <span class="cmt"># Place log file next to .sikuli file.
+</span>    log_path = path.join(path.dirname(path.abspath(getBundlePath())), <span class="str">'BGEE_roller.log'</span>)
+    logging.addHandler(logging.FileHandler(filename=log_path, encoding=<span class="str">'UTF-8'</span>, mode=<span class="str">'a'</span>)
+    logging.debug(<span class="str">'Logging to: %s'</span>, logging_path)
 
 <span class="kw">def</span> get_digits_in_region(region):
     found_numbers = []
@@ -113,8 +126,8 @@ target_value = <span class="dig">89</span>
             found_numbers.append(number_pattern[<span class="dig">0</span>])
     <span class="kw">return</span> found_numbers
 
-<span class="cmt"># Find total roll region
-</span><span class="kw">def</span> get_roll_value():
+<span class="cmt"># Find total roll region</span>
+<span class="kw">def</span> get_roll_value():
     <span class="skw">wait</span>(total_roll_pattern)
     total_roll = <span class="skw">find</span>(total_roll_pattern)
 
@@ -145,8 +158,8 @@ target_value = <span class="dig">89</span>
         <span class="kw">return</span> <span class="dig">0</span>
 
 
-<span class="cmt"># Main runtime loop.
-</span>logging.info(<span class="str">"Starting with max_iterations=%d, target_value=%d"</span>, max_iterations, target_value)
+<span class="cmt"># Main runtime loop.</span>
+logging.info(<span class="str">"Starting with max_iterations=%d, target_value=%d"</span>, max_iterations, target_value)
 <span class="skw">click</span>(store_button_pattern)
 current_top = get_roll_value()
 
@@ -166,7 +179,8 @@ current_top = get_roll_value()
 
 
 <span class="skw">click</span>(recall_button_pattern)
-logging.info(<span class="str">"Done, recalled top roll of %s!"</span>, current_top)
+logging.info(<span class="str">"Done, recalled top roll of %s!"</span>, current_top)<h3>ERROR: EOF in multi-line statement</h3>
+</font></pre>
 </pre>
 </body>
 </html>

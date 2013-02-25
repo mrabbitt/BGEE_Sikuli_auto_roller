@@ -1,4 +1,13 @@
+'''
+BGEE Sikuli Auto Roller
+
+Copyright (c) 2013 by Michael Rabbitt (github.com/mrabbitt)
+TODO Add license.
+'''
 import logging
+import sys
+from os import path
+
 reload(logging)  # Workaround from: https://answers.launchpad.net/sikuli/+question/180346#comment-17
 
 total_roll_pattern = "Total_Roll.png"
@@ -29,10 +38,14 @@ expand_pixels = 4  # margin of error
 max_iterations = 999
 target_value = 89
 
-# Logging
+# Logging configuration
 logging.basicConfig(format='%(asctime)s [%(process)d] %(levelname)-8s %(message)s',
-    level=logging.INFO, 
-    filename='/Users/mike/Documents/coding/BGEE_Sikuli_auto_roller/BGEE_roller.log')
+    level=logging.INFO, stream=sys.stdout)
+if getBundlePath() is not None and getBundlePath().endswith('.sikuli')
+    # Place log file next to .sikuli file.
+    log_path = path.join(path.dirname(path.abspath(getBundlePath())), 'BGEE_roller.log')
+    logging.addHandler(logging.FileHandler(filename=log_path, encoding='UTF-8', mode='a')
+    logging.debug('Logging to: %s', logging_path)
 
 def get_digits_in_region(region):
     found_numbers = []
