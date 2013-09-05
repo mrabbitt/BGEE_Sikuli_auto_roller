@@ -27,3 +27,8 @@ See [the baldursgate.com forums for more information on customizing your game](h
 ### Script configuration
 * **TODO** Describe `max_interations` and `target_value`.
 * **TODO** Describe logging configuration, and make logging easier to configure?
+
+## Possible Future Enhancements
+* Add optional capability to automatically configure game display options.
+* Re-write with Java or Groovy using [Sikuli Java API](http://code.google.com/p/sikuli-api/), distributed as self-contained .jar file.
+* Allow script values to be altered without altering script itself (command line options?)
