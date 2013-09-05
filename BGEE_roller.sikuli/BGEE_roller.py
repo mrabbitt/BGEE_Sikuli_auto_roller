@@ -33,16 +33,16 @@ store_button_pattern = "STORE.png"
 recall_button_pattern = "RECALL.png"
 
 number_patterns = [
-    (0, "number_0.png"),
-    (1, "number_1.png"),
-    (2, "number_2.png"),
-    (3, "number_3.png"),
-    (4, "number_4.png"),
-    (5, "number_5.png"),
-    (6, "number_6.png"),
-    (7, "number_7.png"),
-    (8, "number_8.png"),
-    (9, "number_9.png"),
+    (0, "number0.png"),
+    (1, "number1.png"),
+    (2, "number2.png"),
+    (3, "number3.png"),
+    (4, "number4.png"),
+    (5, "number5.png"),
+    (6, "number6.png"),
+    (7, "number7.png"),
+    (8, "number8.png"),
+    (9, "number9.png"),
 ]
 
 # Sizes for game running windowed at 800x600.
