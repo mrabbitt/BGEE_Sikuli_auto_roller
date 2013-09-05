@@ -46,8 +46,8 @@
          h2 {
             display: inline;
             font-weight: normal;
-         }  
-         
+         }
+
          .info {
             border-bottom: 1px solid #ddd;
             padding-bottom: 5px;
@@ -102,25 +102,25 @@ reload(logging)  <span class="cmt"># Workaround from: https://answers.launchpad.
 total_roll_pattern = <img src="Total_Roll.png" />
 reroll_button_pattern = <img src="REROLL.png" />
 store_button_pattern = <img src="STORE.png" />
-recall_button_pattern = <img src="REQALL.png" />
+recall_button_pattern = <img src="RECALL.png" />
 
 number_patterns = [
-    (<span class="dig">0</span>, <img src="number0.png" />),
-    (<span class="dig">1</span>, <img src="number1.png" />),
-    (<span class="dig">2</span>, <img src="number2.png" />),
-    (<span class="dig">3</span>, Pattern(<img src="number3.png" />).similar(<span class="dig">0.87</span>)),
-    (<span class="dig">4</span>, <img src="number4.png" />),
-    (<span class="dig">5</span>, Pattern(<img src="number5.png" />).similar(<span class="dig">0.85</span>)),
-    (<span class="dig">6</span>, <img src="number6.png" />),
-    (<span class="dig">7</span>, <img src="number7.png" />),
-    (<span class="dig">8</span>, <img src="number8.png" />),
-    (<span class="dig">9</span>, <img src="number9.png" />),
+    (<span class="dig">0</span>, <img src="number_0.png" />),
+    (<span class="dig">1</span>, <img src="number_1.png" />),
+    (<span class="dig">2</span>, <img src="number_2.png" />),
+    (<span class="dig">3</span>, <img src="number_3.png" />),
+    (<span class="dig">4</span>, <img src="number_4.png" />),
+    (<span class="dig">5</span>, <img src="number_5.png" />),
+    (<span class="dig">6</span>, <img src="number_6.png" />),
+    (<span class="dig">7</span>, <img src="number_7.png" />),
+    (<span class="dig">8</span>, <img src="number_8.png" />),
+    (<span class="dig">9</span>, <img src="number_9.png" />),
 ]
 
-<span class="cmt"># Numbers are roughly 12 x 15
-</span>digit_offset_width = <span class="dig">14</span>
-digit_width = <span class="dig">14</span>
-digit_height = <span class="dig">15</span>
+<span class="cmt"># Sizes for game running windowed at 800x600.
+</span>digit_offset_width = <span class="dig">12</span>
+digit_width = <span class="dig">12</span>
+digit_height = <span class="dig">12</span>
 expand_pixels = <span class="dig">4</span>  <span class="cmt"># margin of error</span>
 
 <span class="cmt"># Thresholds
@@ -128,23 +128,26 @@ expand_pixels = <span class="dig">4</span>  <span class="cmt"># margin of error<
 target_value = <span class="dig">89</span>
 
 <span class="cmt"># Logging configuration
-</span>logging.basicConfig(format=<span class="str">'%(asctime)s [%(process)d] %(levelname)-8s %(message)s'</span>,
-    level=logging.INFO, stream=sys.stdout)
-<span class="kw">if</span> getBundlePath() <span class="kw">is</span> <span class="kw">not</span> None <span class="kw">and</span> getBundlePath().endswith(<span class="str">'.sikuli'</span>)
+</span>LOG_FORMAT = <span class="str">'%(asctime)s [%(process)d] %(levelname)-8s %(message)s'</span>
+logging.basicConfig(format=LOG_FORMAT, level=logging.INFO, stream=sys.stdout)
+<span class="kw">if</span> getBundlePath() <span class="kw">is</span> <span class="kw">not</span> None <span class="kw">and</span> getBundlePath().endswith(<span class="str">'.sikuli'</span>):
     <span class="cmt"># Place log file next to .sikuli file.
 </span>    log_path = path.join(path.dirname(path.abspath(getBundlePath())), <span class="str">'BGEE_roller.log'</span>)
-    logging.addHandler(logging.FileHandler(filename=log_path, encoding=<span class="str">'UTF-8'</span>, mode=<span class="str">'a'</span>)
-    logging.debug(<span class="str">'Logging to: %s'</span>, logging_path)
+    handler = logging.FileHandler(filename=log_path, encoding=<span class="str">'UTF-8'</span>, mode=<span class="str">'a'</span>)
+    handler.setFormatter(logging.Formatter(LOG_FORMAT))
+    logging.root.addHandler(handler)
+    logging.debug(<span class="str">'Logging to: %s'</span>, log_path)
 
 <span class="kw">def</span> get_digits_in_region(region):
     found_numbers = []
-    <span class="kw">for</span> number_pattern <span class="kw">in</span> number_patterns:
+    <span class="cmt"># TODO Can this be parallelized?
+</span>    <span class="kw">for</span> number_pattern <span class="kw">in</span> number_patterns:
         <span class="kw">if</span> region.exists(number_pattern[<span class="dig">1</span>], <span class="dig">0.001</span>):
             found_numbers.append(number_pattern[<span class="dig">0</span>])
     <span class="kw">return</span> found_numbers
 
-<span class="cmt"># Find total roll region</span>
-<span class="kw">def</span> get_roll_value():
+<span class="cmt"># Find total roll region
+</span><span class="kw">def</span> get_roll_value():
     <span class="skw">wait</span>(total_roll_pattern)
     total_roll = <span class="skw">find</span>(total_roll_pattern)
 
@@ -175,29 +178,35 @@ target_value = <span class="dig">89</span>
         <span class="kw">return</span> <span class="dig">0</span>
 
 
-<span class="cmt"># Main runtime loop.</span>
-logging.info(<span class="str">"Starting with max_iterations=%d, target_value=%d"</span>, max_iterations, target_value)
-<span class="skw">click</span>(store_button_pattern)
-current_top = get_roll_value()
+<span class="cmt"># Main runtime loop.
+</span>logging.info(<span class="str">"Starting with max_iterations=%d, target_value=%d"</span>, max_iterations, target_value)
 
-<span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">0</span>, max_iterations):
-    <span class="skw">click</span>(reroll_button_pattern)
-    current_value = get_roll_value()
+<span class="kw">try</span>:
+    <span class="skw">click</span>(store_button_pattern)
+    current_top = get_roll_value()
 
-    <span class="kw">if</span> current_value &gt; current_top:
-        <span class="skw">click</span>(store_button_pattern)
-        current_top = current_value
-        logging.info(<span class="str">"%d: Stored new top value:  %d"</span>, i, current_top)
+    <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">0</span>, max_iterations):
+        <span class="skw">click</span>(reroll_button_pattern)
+        current_value = get_roll_value()
 
-        <span class="kw">if</span> current_top &gt;= target_value:
-            <span class="kw">break</span>;
-    <span class="kw">else</span>:
-        logging.info(<span class="str">"%d: Rolled total value of: %d"</span>, i, current_value)
+        <span class="kw">if</span> current_value &gt; current_top:
+            <span class="skw">click</span>(store_button_pattern)
+            current_top = current_value
+            logging.info(<span class="str">"Roll #%d: Stored new top value:  %d"</span>, i, current_top)
+
+            <span class="kw">if</span> current_top &gt;= target_value:
+                <span class="kw">break</span>;
+        <span class="kw">else</span>:
+            logging.info(<span class="str">"Roll #%d: Rolled total value of: %d (stored top value: %d)"</span>,
+                         i, current_value, current_top)
 
 
-<span class="skw">click</span>(recall_button_pattern)
-logging.info(<span class="str">"Done, recalled top roll of %s!"</span>, current_top)<h3>ERROR: EOF in multi-line statement</h3>
-</font></pre>
+    <span class="skw">click</span>(recall_button_pattern)
+    logging.info(<span class="str">"Done, recalled top roll of %s!"</span>, current_top)
+
+<span class="kw">except</span>:
+    logging.exception(<span class="str">'Unexpected exception occurred.'</span>)
+    <span class="kw">raise</span>
 </pre>
 </body>
 </html>

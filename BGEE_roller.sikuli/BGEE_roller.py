@@ -30,25 +30,25 @@ reload(logging)  # Workaround from: https://answers.launchpad.net/sikuli/+questi
 total_roll_pattern = "Total_Roll.png"
 reroll_button_pattern = "REROLL.png"
 store_button_pattern = "STORE.png"
-recall_button_pattern = "REQALL.png"
+recall_button_pattern = "RECALL.png"
 
 number_patterns = [
-    (0, "number0.png"),
-    (1, "number1.png"),
-    (2, "number2.png"),
-    (3, Pattern("number3.png").similar(0.87)),
-    (4, "number4.png"),
-    (5, Pattern("number5.png").similar(0.85)),
-    (6, "number6.png"),
-    (7, "number7.png"),
-    (8, "number8.png"),
-    (9, "number9.png"),
+    (0, "number_0.png"),
+    (1, "number_1.png"),
+    (2, "number_2.png"),
+    (3, "number_3.png"),
+    (4, "number_4.png"),
+    (5, "number_5.png"),
+    (6, "number_6.png"),
+    (7, "number_7.png"),
+    (8, "number_8.png"),
+    (9, "number_9.png"),
 ]
 
-# Numbers are roughly 12 x 15
-digit_offset_width = 14
-digit_width = 14
-digit_height = 15
+# Sizes for game running windowed at 800x600.
+digit_offset_width = 12
+digit_width = 12
+digit_height = 12
 expand_pixels = 4  # margin of error
 
 # Thresholds
@@ -56,16 +56,19 @@ max_iterations = 999
 target_value = 89
 
 # Logging configuration
-logging.basicConfig(format='%(asctime)s [%(process)d] %(levelname)-8s %(message)s',
-    level=logging.INFO, stream=sys.stdout)
-if getBundlePath() is not None and getBundlePath().endswith('.sikuli')
+LOG_FORMAT = '%(asctime)s [%(process)d] %(levelname)-8s %(message)s'
+logging.basicConfig(format=LOG_FORMAT, level=logging.INFO, stream=sys.stdout)
+if getBundlePath() is not None and getBundlePath().endswith('.sikuli'):
     # Place log file next to .sikuli file.
     log_path = path.join(path.dirname(path.abspath(getBundlePath())), 'BGEE_roller.log')
-    logging.addHandler(logging.FileHandler(filename=log_path, encoding='UTF-8', mode='a')
-    logging.debug('Logging to: %s', logging_path)
-
+    handler = logging.FileHandler(filename=log_path, encoding='UTF-8', mode='a')
+    handler.setFormatter(logging.Formatter(LOG_FORMAT))
+    logging.root.addHandler(handler)
+    logging.debug('Logging to: %s', log_path)
+                        
 def get_digits_in_region(region):
     found_numbers = []
+    # TODO Can this be parallelized?
     for number_pattern in number_patterns:
         if region.exists(number_pattern[1], 0.001):
             found_numbers.append(number_pattern[0])
@@ -105,23 +108,30 @@ def get_roll_value():
 
 # Main runtime loop.
 logging.info("Starting with max_iterations=%d, target_value=%d", max_iterations, target_value)
-click(store_button_pattern)
-current_top = get_roll_value()
 
-for i in xrange(0, max_iterations):
-    click(reroll_button_pattern)
-    current_value = get_roll_value()
+try:
+    click(store_button_pattern)
+    current_top = get_roll_value()
+    
+    for i in xrange(0, max_iterations):
+        click(reroll_button_pattern)
+        current_value = get_roll_value()
+    
+        if current_value > current_top:
+            click(store_button_pattern)
+            current_top = current_value
+            logging.info("Roll #%d: Stored new top value:  %d", i, current_top)
+    
+            if current_top >= target_value:
+                break;
+        else:
+            logging.info("Roll #%d: Rolled total value of: %d (stored top value: %d)", 
+                         i, current_value, current_top)
+            
+    
+    click(recall_button_pattern)
+    logging.info("Done, recalled top roll of %s!", current_top)
 
-    if current_value > current_top:
-        click(store_button_pattern)
-        current_top = current_value
-        logging.info("%d: Stored new top value:  %d", i, current_top)
-
-        if current_top >= target_value:
-            break;
-    else:
-        logging.info("%d: Rolled total value of: %d", i, current_value)
-        
-
-click(recall_button_pattern)
-logging.info("Done, recalled top roll of %s!", current_top)
+except:
+    logging.exception('Unexpected exception occurred.')
+    raise

@@ -11,7 +11,7 @@ To run this script, you need [Sikuli IDE](http://www.sikuli.org).  See  [sikuli.
 ## Running
 
 ### Game Setup
-For best results, run *Baldur's Gate: Enhanced Edition* in a window 1024x768.  You can edit the `Baldur.ini` file to set the size explicitly.  `Baldur.ini` is found:
+For best results, run *Baldur's Gate: Enhanced Edition* in a 800x600 window.  You can edit the `Baldur.ini` file to set the size explicitly.  `Baldur.ini` is found:
 
 * `~/Documents/Baldur's Gate - Enhanced Edition/Baldur.ini`
 * `%USERPROFILE%\MY DOCUMENTS\Baldur's Gate - Enhanced Edition\Baldur.ini` ***(unverified)***
@@ -19,8 +19,8 @@ For best results, run *Baldur's Gate: Enhanced Edition* in a window 1024x768.  Y
 Within the `INSERT INTO options ROWS(...)` section, add or replace the following settings:
 
     	'Window',	'Full Screen',	'0',
-    	'Window',	'w',	'1024',
-    	'Window',	'h',	'768',
+    	'Window',	'w',	'800',
+    	'Window',	'h',	'600',
 
 See [the baldursgate.com forums for more information on customizing your game](http://forum.baldursgate.com/discussion/8317/how-to-manually-customize-your-game).
 
