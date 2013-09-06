@@ -112,8 +112,9 @@ logging.info("Starting with max_iterations=%d, target_value=%d", max_iterations,
 try:
     click(store_button_pattern)
     current_top = get_roll_value()
-    
-    for i in xrange(0, max_iterations):
+    logging.info("Stored initial top value:  %d", current_top)
+
+    for i in xrange(1, max_iterations+1):
         click(reroll_button_pattern)
         current_value = get_roll_value()
     

@@ -184,8 +184,9 @@ logging.basicConfig(format=LOG_FORMAT, level=logging.INFO, stream=sys.stdout)
 <span class="kw">try</span>:
     <span class="skw">click</span>(store_button_pattern)
     current_top = get_roll_value()
+    logging.info(<span class="str">"Stored initial top value:  %d"</span>, current_top)
 
-    <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">0</span>, max_iterations):
+    <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">1</span>, max_iterations+<span class="dig">1</span>):
         <span class="skw">click</span>(reroll_button_pattern)
         current_value = get_roll_value()
 
