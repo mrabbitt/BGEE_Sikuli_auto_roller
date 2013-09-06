@@ -6,7 +6,7 @@ This is a script for [Sikuli IDE](http://www.sikuli.org) which automates repeate
 Licensed with MIT License (see `LICENSE` file).
 
 ## Prerequisites
-To run this script, you need [Sikuli IDE](http://www.sikuli.org).  See  [sikuli.org/download.html](http://www.sikuli.org/download.html) for information and downloads.  This script was developed and tested using *Sikuli X-1.0rc3 (r930)* on Mac OS X 10.8, but will likely work on other platforms.
+To run this script, you need [Sikuli IDE](http://www.sikuli.org).  See  [sikuli.org/download.html](http://www.sikuli.org/download.html) for information and downloads.  This script was developed and tested using **Sikuli IDE 1.0.1** on Mac OS X 10.8, but will likely work on other platforms.
 
 ## Running
 
