@@ -3,9 +3,10 @@
 ## About
 This is a script for [Sikuli IDE](http://www.sikuli.org) which automates repeated rolling for attributes during the character creation process of the game [Baldur's Gate: Enhanced Edition](http://www.baldursgate.com).
 
-![BGEE Character Generation Screenshot](BGEE_character_generation_screenshot.png)
-
 Licensed with MIT License (see `LICENSE` file).
+
+## Demo video
+[![▶ BGEE Sikuli Auto Roller DEMO - YouTube](http://img.youtube.com/vi/K-0nRvz3z4I/0.jpg)](http://www.youtube.com/watch?v=K-0nRvz3z4I)
 
 ## Prerequisites
 To run this script, you need [Sikuli IDE](http://www.sikuli.org).  See  [sikuli.org/download.html](http://www.sikuli.org/download.html) for information and downloads.  This script was developed and tested using **Sikuli IDE 1.0.1** on Mac OS X 10.8, but will likely work on other platforms.
